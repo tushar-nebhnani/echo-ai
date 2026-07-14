@@ -192,7 +192,7 @@ app.post("/api/chat", async (req, res) => {
       // });
 
       const completion = await gemini.models.generateContent({
-        model: "gemini-2.5-flash-lite",
+        model: "gemini-2.5-flash",
         contents: MESSAGE_DB,
         config: {
           responseMimeType: "application/json",
