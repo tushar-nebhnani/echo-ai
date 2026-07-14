@@ -48,7 +48,7 @@ const AppContent: React.FC = () => {
   });
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [chatHistory, setChatHistory] = useState(() => {
+  const [chatHistory, setChatHistory] = useState<{ id: string; title: string; mentorId: string }[]>(() => {
     const saved = localStorage.getItem("chatHistory");
     return saved ? JSON.parse(saved) : INITIAL_CHAT_HISTORY;
   });

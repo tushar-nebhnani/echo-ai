@@ -12,17 +12,17 @@
   --brand-accent-light: #a78bfa;
 
   /* Light Mode Tokens */
-  --bg-app: #f5f0e8;
-  --bg-sidebar: #ffffff;
-  --bg-sidebar-hover: #f8f4ee;
+  --bg-app: #f2ede4;
+  --bg-sidebar: #fdfdfc;
+  --bg-sidebar-hover: #f5f0e8;
   --bg-mentor-selected: #fff8ec;
   --bg-mentor-selected-border: #f97316;
-  --bg-surface: #ffffff;
+  --bg-surface: #fdfcf9;
   --bg-surface-2: #faf8f4;
-  --bg-input: #f0ece4;
+  --bg-input: #f2ede4;
   --bg-pill: #ede9e0;
   --bg-pill-hover: #e2ddd3;
-  --bg-new-chat: #ffffff;
+  --bg-new-chat: #fdfcf9;
   --bg-chat-item: transparent;
   --bg-chat-item-hover: #f0ece4;
 
@@ -58,31 +58,31 @@
 
 /* Dark Mode Tokens */
 [data-theme='dark'] {
-  --bg-app: #0f0d0b;
-  --bg-sidebar: #171410;
-  --bg-sidebar-hover: #1f1b16;
-  --bg-mentor-selected: #2a1f0a;
+  --bg-app: #120f0c;
+  --bg-sidebar: #1e1914;
+  --bg-sidebar-hover: #2a241f;
+  --bg-mentor-selected: #332612;
   --bg-mentor-selected-border: #f97316;
-  --bg-surface: #1a1611;
-  --bg-surface-2: #201c16;
-  --bg-input: #211d17;
-  --bg-pill: #211d17;
-  --bg-pill-hover: #2a2620;
-  --bg-new-chat: #211d17;
+  --bg-surface: #221d18;
+  --bg-surface-2: #2b251f;
+  --bg-input: #2a241f;
+  --bg-pill: #2a241f;
+  --bg-pill-hover: #362e28;
+  --bg-new-chat: #2a241f;
   --bg-chat-item: transparent;
-  --bg-chat-item-hover: #211d17;
+  --bg-chat-item-hover: #2a241f;
 
-  --text-primary: #f0ece4;
-  --text-secondary: #a89f93;
-  --text-tertiary: #6b6257;
+  --text-primary: #ffffff;
+  --text-secondary: #c2b8ab;
+  --text-tertiary: #857a6d;
   --text-on-brand: #ffffff;
-  --text-mentor-name: #f0ece4;
-  --text-mentor-tag: #a89f93;
-  --text-section-label: #6b6257;
+  --text-mentor-name: #ffffff;
+  --text-mentor-tag: #c2b8ab;
+  --text-section-label: #857a6d;
 
-  --border-subtle: #2a2520;
-  --border-medium: #342f28;
-  --border-sidebar: #231f19;
+  --border-subtle: #332d26;
+  --border-medium: #443c33;
+  --border-sidebar: #2b251f;
 
   --shadow-card: 0 2px 12px rgba(0,0,0,0.3);
   --shadow-input: 0 2px 20px rgba(0,0,0,0.4);
@@ -135,6 +135,9 @@ input, textarea {
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
+  padding: 12px;
+  gap: 12px;
+  background-color: var(--bg-app);
 }
 
 /* ===== HEADER ===== */
@@ -145,7 +148,8 @@ input, textarea {
   justify-content: space-between;
   padding: 0 24px;
   background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
   transition: background var(--transition-slow), border-color var(--transition-slow);
   flex-shrink: 0;
   z-index: 100;
@@ -247,13 +251,15 @@ input, textarea {
   display: flex;
   flex: 1;
   overflow: hidden;
+  gap: 12px;
 }
 
 /* ===== SIDEBAR ===== */
 .sidebar {
   width: var(--sidebar-width);
   background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-sidebar);
+  border: 1px solid var(--border-sidebar);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   padding: 20px 12px;
@@ -461,7 +467,9 @@ input, textarea {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: var(--bg-app);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
   transition: background var(--transition-slow);
   position: relative;
 }
@@ -811,4 +819,48 @@ input, textarea {
   .chat-area { padding: 24px 16px; }
   .input-bar-wrapper { padding: 12px 16px 16px; }
   .welcome-title { font-size: 28px; }
+}
+
+/* ===== MARKDOWN BODY STYLES ===== */
+.markdown-body {
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.markdown-body p {
+  margin-bottom: 0.75em;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body ul, .markdown-body ol {
+  margin-left: 1.5em;
+  margin-bottom: 0.75em;
+}
+
+.markdown-body pre {
+  background: var(--bg-app);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  overflow-x: auto;
+  margin-bottom: 0.75em;
+  border: 1px solid var(--border-subtle);
+}
+
+.markdown-body code {
+  font-family: monospace;
+  font-size: 0.9em;
+  background: var(--bg-pill);
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.markdown-body pre code {
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
 }

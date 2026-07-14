@@ -7,6 +7,7 @@ export interface Mentor {
   tagColor: 'brand' | 'neutral';
   avatarBg: string;
   initials: string;
+  avatar: string;
   online: boolean;
   welcomeTitle: string;
   welcomeSubtitle: string;

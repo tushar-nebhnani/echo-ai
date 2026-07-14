@@ -1,4 +1,7 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
 import type { Message, Mentor } from '../types';
 
 interface MessageBubbleProps {
@@ -18,26 +21,30 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, mentor }) => {
     <div className={`message ${isUser ? 'message-user' : 'message-mentor'}`}>
       {/* Avatar */}
       {!isUser ? (
-        <div
-          className="message-avatar-placeholder"
-          style={{ background: mentor.avatarBg }}
-          aria-label={mentor.name}
-        >
-          {mentor.initials}
-        </div>
+        <img
+          src={mentor.avatar}
+          alt={mentor.name}
+          className="message-avatar"
+        />
       ) : (
-        <div
-          className="message-avatar-placeholder"
-          style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)' }}
-          aria-label="You"
-        >
-          U
-        </div>
+        <img
+          src="/user-avatar.jpg"
+          alt="You"
+          className="message-avatar"
+        />
       )}
 
       {/* Bubble */}
       <div className={`message-bubble ${isUser ? 'message-bubble-user' : 'message-bubble-mentor'}`}>
-        <p>{message.content}</p>
+        {isUser ? (
+          <p>{message.content}</p>
+        ) : (
+          <div className="markdown-body">
+            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+              {message.content.replace(/\\n/g, '\n')}
+            </ReactMarkdown>
+          </div>
+        )}
         <div className="message-time">{formatTime(message.timestamp)}</div>
       </div>
     </div>
@@ -45,3 +52,4 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, mentor }) => {
 };
 
 export default MessageBubble;
+

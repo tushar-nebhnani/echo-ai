@@ -11,13 +11,11 @@ const WelcomeState: React.FC<WelcomeStateProps> = ({ mentor, onSuggestionClick }
     <div className="welcome-state" role="main" aria-label={`Welcome to ${mentor.welcomeTitle}`}>
       {/* Mentor Avatar */}
       <div className="welcome-avatar-ring">
-        <div
-          className="welcome-avatar-placeholder"
-          style={{ background: mentor.avatarBg }}
-          aria-label={mentor.name}
-        >
-          {mentor.initials}
-        </div>
+        <img
+          src={mentor.avatar}
+          alt={mentor.name}
+          className="welcome-avatar"
+        />
       </div>
 
       {/* Title */}

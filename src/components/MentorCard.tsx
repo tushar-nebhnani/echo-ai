@@ -17,13 +17,11 @@ const MentorCard: React.FC<MentorCardProps> = ({ mentor, isSelected, onClick }) 
       role="option"
     >
       <div className="mentor-avatar-wrapper">
-        <div
-          className="mentor-avatar-placeholder"
-          style={{ background: mentor.avatarBg }}
-          aria-label={mentor.name}
-        >
-          {mentor.initials}
-        </div>
+        <img
+          src={mentor.avatar}
+          alt={mentor.name}
+          className="mentor-avatar"
+        />
         {mentor.online && <span className="mentor-status-dot" aria-label="Online" />}
       </div>
 
