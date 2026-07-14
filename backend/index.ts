@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
@@ -121,7 +120,6 @@ async function callTool(functionName: string, input: string) {
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 checkAPIKey();
-const openai = new OpenAI();
 const gemini = new GoogleGenAI({
   apiKey: process.env.GOOGLE_API_KEY,
 });
