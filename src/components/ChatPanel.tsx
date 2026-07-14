@@ -1,12 +1,21 @@
-import React, { useRef, useEffect } from 'react';
-import type { Message, Mentor } from '../types';
-import MessageBubble from './MessageBubble';
-import WelcomeState from './WelcomeState';
-import TypingIndicator from './TypingIndicator';
+import React, { useRef, useEffect } from "react";
+import type { Message, Mentor } from "../types";
+import MessageBubble from "./MessageBubble";
+import WelcomeState from "./WelcomeState";
+import TypingIndicator from "./TypingIndicator";
 
 // Send (arrow) icon
 const SendIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
     <line x1="22" y1="2" x2="11" y2="13" />
     <polygon points="22 2 15 22 11 13 2 9 22 2" />
   </svg>
@@ -37,19 +46,19 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
   // Auto-resize textarea
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
-    ta.style.height = 'auto';
+    ta.style.height = "auto";
     ta.style.height = `${Math.min(ta.scrollHeight, 160)}px`;
   }, [inputValue]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       onSend();
     }
@@ -95,6 +104,9 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
           >
             <SendIcon />
           </button>
+        </div>
+        <div style={{ fontSize: '11.5px', color: 'var(--text-tertiary)', textAlign: 'center', marginTop: '12px', padding: '0 20px', lineHeight: '1.5' }}>
+          <strong>Note:</strong> EchoAI is currently powered by the free tier of Google's Gemini API. You may occasionally experience brief delays due to standard rate limits.
         </div>
       </div>
     </div>

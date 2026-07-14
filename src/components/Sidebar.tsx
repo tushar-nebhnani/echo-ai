@@ -38,6 +38,8 @@ interface SidebarProps {
   chatHistory: ChatHistoryItem[];
   onNewChat: () => void;
   onDeleteChat: (chatId: string, mentorId: string) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -47,9 +49,13 @@ const Sidebar: React.FC<SidebarProps> = ({
   chatHistory,
   onNewChat,
   onDeleteChat,
+  isOpen,
+  onClose,
 }) => {
   return (
-    <aside className="sidebar" role="complementary" aria-label="Sidebar">
+    <>
+      {isOpen && <div className="sidebar-overlay" onClick={onClose} aria-hidden="true" />}
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`} role="complementary" aria-label="Sidebar">
       {/* SELECT MENTOR */}
       <section className="sidebar-section" aria-label="Select Mentor">
         <div className="sidebar-label">Select Mentor</div>
@@ -113,6 +119,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </section>
     </aside>
+    </>
   );
 };
 

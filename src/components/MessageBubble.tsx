@@ -40,8 +40,13 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, mentor }) => {
           <p>{message.content}</p>
         ) : (
           <div className="markdown-body">
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-              {message.content.replace(/\\n/g, '\n')}
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm, remarkBreaks]}
+              components={{
+                a: ({ node, ...props }) => <a target="_blank" rel="noopener noreferrer" {...props} />
+              }}
+            >
+              {message.content.replace(/\\n/g, '\n').replace(/\n{3,}/g, '\n\n')}
             </ReactMarkdown>
           </div>
         )}

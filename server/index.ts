@@ -2,13 +2,14 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import OpenAI from "openai";
+import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173" }));
 app.use(express.json());
 
 interface ChatMessage {
@@ -117,8 +118,13 @@ async function callTool(functionName: string, input: string) {
   }
 }
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 checkAPIKey();
 const openai = new OpenAI();
+const gemini = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_API_KEY,
+});
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok" });
@@ -144,13 +150,20 @@ app.post("/api/chat", async (req, res) => {
       systemPrompt +
       "Always ensure that the end user gets a structure respone, not a long paragraph. And all the responses must be in JSON format.";
 
-    const MESSAGE_DB: any[] = [
-      {
-        role: "system",
-        content: finalSystemPrompt,
-      },
-      ...messages,
-    ];
+    // For OpenAI
+    // const MESSAGE_DB: any[] = [
+    //   {
+    //     role: "system",
+    //     content: finalSystemPrompt,
+    //   },
+    //   ...messages,
+    // ];
+
+    // For Gemini
+    const MESSAGE_DB: any[] = messages.map((msg) => ({
+      role: msg.role === "assistant" ? "model" : "user",
+      parts: [{ text: msg.content }], // Gemini demands this structure for text
+    }));
 
     let iterations = 0;
     const MAX_ITERATIONS = 17;
@@ -158,15 +171,37 @@ app.post("/api/chat", async (req, res) => {
     while (iterations < MAX_ITERATIONS) {
       iterations++;
 
-      const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
-        messages: MESSAGE_DB,
-        response_format: { type: "json_object" },
-        // max_tokens: 800,
-        // temperature: 0.7,
+      // ==========================================
+      // SWITCHING BETWEEN GEMINI AND OPENAI
+      // ==========================================
+      // To switch to OpenAI:
+      // 1. Uncomment the OpenAI MESSAGE_DB format above and comment out the Gemini one.
+      // 2. Remove or comment out `await delay(2000)` below.
+      // 3. Uncomment the OpenAI `completion` call below and comment out the Gemini one.
+      // 4. Uncomment the OpenAI `rawResult` / `MESSAGE_DB.push` and comment out Gemini's.
+      // 5. Do the same for the TOOL_REQUEST push formatting further down.
+      // ==========================================
+
+      await delay(2000); // Remove when using OpenAI (helps avoid Gemini Free Tier rate limits)
+
+      // --- OPENAI COMPLETION ---
+      // const completion = await openai.chat.completions.create({
+      //   model: "gpt-4o-mini",
+      //   messages: MESSAGE_DB,
+      //   response_format: { type: "json_object" },
+      // });
+
+      const completion = await gemini.models.generateContent({
+        model: "gemini-2.5-flash-lite",
+        contents: MESSAGE_DB,
+        config: {
+          responseMimeType: "application/json",
+          systemInstruction: finalSystemPrompt,
+        },
       });
 
-      const rawResult = completion.choices[0].message.content;
+      // const rawResult = completion.choices[0].message.content; // For OpenAI
+      const rawResult = completion.text; // For Gemini
       if (!rawResult) continue;
 
       let parsedResult;
@@ -177,8 +212,10 @@ app.post("/api/chat", async (req, res) => {
         return res.status(500).json({ error: "AI returned invalid format" });
       }
 
-      MESSAGE_DB.push({ role: "assistant", content: rawResult });
+      // MESSAGE_DB.push({ role: "assistant", content: rawResult }); // For OpenAI
+      MESSAGE_DB.push({ role: "model", parts: [{ text: rawResult }] }); // For Gemini
 
+      // For Debugging:
       // console.log(
       //   `🤖 [Iteration ${iterations}] ${parsedResult.step}: ${parsedResult.text}`,
       // );
@@ -187,13 +224,27 @@ app.post("/api/chat", async (req, res) => {
         const { functionName, input } = parsedResult;
         const toolResult = await callTool(functionName, input);
 
-        messages.push({
-          role: "developer",
-          content: JSON.stringify({
-            step: "TOOL_OUTPUT",
-            functionName,
-            output: toolResult,
-          }),
+        // For OpenAI
+        // messages.push({
+        //   role: "developer",
+        //   content: JSON.stringify({
+        //     step: "TOOL_OUTPUT",
+        //     functionName,
+        //     output: toolResult,
+        //   }),
+        // });
+
+        MESSAGE_DB.push({
+          role: "user",
+          parts: [
+            {
+              text: JSON.stringify({
+                step: "TOOL_OUTPUT",
+                functionName,
+                output: toolResult,
+              }),
+            },
+          ],
         });
 
         continue;
@@ -206,7 +257,8 @@ app.post("/api/chat", async (req, res) => {
 
     return res.status(500).json({ error: "AI took too many steps to respond" });
   } catch (error: any) {
-    console.error("OpenAI error:", error.message);
+    // console.error("OpenAI error:", error.message);
+    console.error("Gemini error:", error);
     return res.status(500).json({ error: "Failed to get AI response" });
   }
 });

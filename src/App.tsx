@@ -52,6 +52,7 @@ const AppContent: React.FC = () => {
     const saved = localStorage.getItem("chatHistory");
     return saved ? JSON.parse(saved) : INITIAL_CHAT_HISTORY;
   });
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("messagesByMentor", JSON.stringify(messagesByMentor));
@@ -67,6 +68,7 @@ const AppContent: React.FC = () => {
     setSelectedMentorId(id);
     setInputValue("");
     setIsTyping(false);
+    setIsMobileSidebarOpen(false); // Close sidebar on mobile after selecting mentor
   }, []);
 
   const handleSend = useCallback(async () => {
@@ -218,6 +220,9 @@ const AppContent: React.FC = () => {
       <Header
         mentorName={selectedMentor.name}
         mentorTag={`${selectedMentor.tag} Expert`}
+        mentorOnline={selectedMentor.online}
+        isMobileSidebarOpen={isMobileSidebarOpen}
+        toggleMobileSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
       />
       <div className="content-wrapper">
         <Sidebar
@@ -227,6 +232,8 @@ const AppContent: React.FC = () => {
           chatHistory={chatHistory}
           onNewChat={handleNewChat}
           onDeleteChat={handleDeleteChat}
+          isOpen={isMobileSidebarOpen}
+          onClose={() => setIsMobileSidebarOpen(false)}
         />
         <ChatPanel
           mentor={selectedMentor}

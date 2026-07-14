@@ -22,7 +22,7 @@ const MentorCard: React.FC<MentorCardProps> = ({ mentor, isSelected, onClick }) 
           alt={mentor.name}
           className="mentor-avatar"
         />
-        {mentor.online && <span className="mentor-status-dot" aria-label="Online" />}
+        {(mentor.online && isSelected) && <span className="mentor-status-dot" aria-label="Online" />}
       </div>
 
       <div className="mentor-info">
