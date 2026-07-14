@@ -21,6 +21,7 @@ async function callMentorAPI(
 
   const backendUri =
     import.meta.env.VITE_BACKEND_URI || "http://localhost:8080";
+
   const response = await fetch(`${backendUri}/api/chat`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -118,8 +119,7 @@ const AppContent: React.FC = () => {
       const errorMessage: Message = {
         id: generateId(),
         role: "mentor",
-        content:
-          "⚠️ Failed to connect to AI backend. Make sure your server is running on port 3001 and your API key is correct.",
+        content: "⚠️ Internal Server Error: 500",
         timestamp: new Date(),
       };
       setMessagesByMentor((prev) => ({
