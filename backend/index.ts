@@ -1,8 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-// import OpenAI from "openai";
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 import HITESH_PERSONA from "./prompts/hitesh.js";
 import PIYUSH_PERSONA from "./prompts/piyush.js";
 import BOTH_PERSONA from "./prompts/combine.js";
@@ -55,7 +54,7 @@ interface FormattedVideo {
 }
 
 function checkAPIKey() {
-  if (!process.env.GEMINI_API_KEY) {
+  if (!process.env.NVIDIA_API_KEY) {
     return { status: 404, message: "API KEY missing from .env file!!" };
   }
 }
@@ -130,13 +129,10 @@ async function callTool(functionName: string, input: string) {
   }
 }
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 checkAPIKey();
-// const openai = new OpenAI();
-
-const gemini = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.NVIDIA_API_KEY,
+  baseURL: "https://integrate.api.nvidia.com/v1",
 });
 
 app.get("/health", (_req, res) => {
@@ -163,20 +159,13 @@ app.post("/api/chat", async (req, res) => {
       systemPrompt +
       "Always ensure that the end user gets a structure respone, not a long paragraph. And all the responses must be in JSON format.";
 
-    // For OpenAI
-    // const MESSAGE_DB: any[] = [
-    //   {
-    //     role: "system",
-    //     content: finalSystemPrompt,
-    //   },
-    //   ...messages,
-    // ];
-
-    // For Gemini
-    const MESSAGE_DB: any[] = messages.map((msg) => ({
-      role: msg.role === "assistant" ? "model" : "user",
-      parts: [{ text: msg.content }], // Gemini demands this structure for text
-    }));
+    const MESSAGE_DB: any[] = [
+      {
+        role: "system",
+        content: finalSystemPrompt,
+      },
+      ...messages,
+    ];
 
     let iterations = 0;
     const MAX_ITERATIONS = 17;
@@ -184,37 +173,20 @@ app.post("/api/chat", async (req, res) => {
     while (iterations < MAX_ITERATIONS) {
       iterations++;
 
-      // ==========================================
-      // SWITCHING BETWEEN GEMINI AND OPENAI
-      // ==========================================
-      // To switch to OpenAI:
-      // 1. Uncomment the OpenAI MESSAGE_DB format above and comment out the Gemini one.
-      // 2. Remove or comment out `await delay(2000)` below.
-      // 3. Uncomment the OpenAI `completion` call below and comment out the Gemini one.
-      // 4. Uncomment the OpenAI `rawResult` / `MESSAGE_DB.push` and comment out Gemini's.
-      // 5. Do the same for the TOOL_REQUEST push formatting further down.
-      // ==========================================
-
-      await delay(2000); // Remove when using OpenAI (helps avoid Gemini Free Tier rate limits)
-
-      // --- OPENAI COMPLETION ---
-      // const completion = await openai.chat.completions.create({
-      //   model: "gpt-4o-mini",
-      //   messages: MESSAGE_DB,
-      //   response_format: { type: "json_object" },
-      // });
-
-      const completion = await gemini.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: MESSAGE_DB,
-        config: {
-          responseMimeType: "application/json",
-          systemInstruction: finalSystemPrompt,
-        },
+      const completion = await openai.chat.completions.create({
+        model: "nvidia/nemotron-3-super-120b-a12b",
+        messages: MESSAGE_DB,
+        temperature: 1,
+        top_p: 0.95,
+        max_tokens: 16384,
+        // @ts-ignore - NVIDIA specific parameters
+        reasoning_budget: 16384,
+        // @ts-ignore
+        chat_template_kwargs: { enable_thinking: true },
+        response_format: { type: "json_object" },
       });
 
-      // const rawResult = completion.choices[0].message.content; // For OpenAI
-      const rawResult = completion.text; // For Gemini
+      const rawResult = completion.choices[0].message.content; // For OpenAI
       if (!rawResult) continue;
 
       let parsedResult;
@@ -225,8 +197,7 @@ app.post("/api/chat", async (req, res) => {
         return res.status(500).json({ error: "AI returned invalid format" });
       }
 
-      // MESSAGE_DB.push({ role: "assistant", content: rawResult }); // For OpenAI
-      MESSAGE_DB.push({ role: "model", parts: [{ text: rawResult }] }); // For Gemini
+      MESSAGE_DB.push({ role: "assistant", content: rawResult }); // For OpenAI
 
       // For Debugging:
       // console.log(
@@ -237,27 +208,13 @@ app.post("/api/chat", async (req, res) => {
         const { functionName, input } = parsedResult;
         const toolResult = await callTool(functionName, input);
 
-        // For OpenAI
-        // messages.push({
-        //   role: "developer",
-        //   content: JSON.stringify({
-        //     step: "TOOL_OUTPUT",
-        //     functionName,
-        //     output: toolResult,
-        //   }),
-        // });
-
-        MESSAGE_DB.push({
-          role: "user",
-          parts: [
-            {
-              text: JSON.stringify({
-                step: "TOOL_OUTPUT",
-                functionName,
-                output: toolResult,
-              }),
-            },
-          ],
+        messages.push({
+          role: "developer",
+          content: JSON.stringify({
+            step: "TOOL_OUTPUT",
+            functionName,
+            output: toolResult,
+          }),
         });
 
         continue;
@@ -270,18 +227,7 @@ app.post("/api/chat", async (req, res) => {
 
     return res.status(500).json({ error: "AI took too many steps to respond" });
   } catch (error: any) {
-    // console.error("OpenAI error:", error.message);
-    // Handle specific API errors
-    if (
-      error.status === 429 ||
-      (error.message && error.message.includes("429"))
-    ) {
-      return res.status(429).json({
-        error:
-          "We're experiencing high traffic. Gemini API rate limit exceeded. Please wait a moment and try again.",
-      });
-    }
-    console.error("Gemini error:", error);
+    console.error("OpenAI error:", error.message);
 
     return res.status(500).json({ error: "Failed to get AI response" });
   }

@@ -105,8 +105,19 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
             <SendIcon />
           </button>
         </div>
-        <div style={{ fontSize: '11.5px', color: 'var(--text-tertiary)', textAlign: 'center', marginTop: '12px', padding: '0 20px', lineHeight: '1.5' }}>
-          <strong>Note:</strong> EchoAI is currently powered by the free tier of Google's Gemini API. You may occasionally experience brief delays due to standard rate limits.
+        <div
+          style={{
+            fontSize: "11.5px",
+            color: "var(--text-tertiary)",
+            textAlign: "center",
+            marginTop: "12px",
+            padding: "0 20px",
+            lineHeight: "1.5",
+          }}
+        >
+          <strong>Note:</strong> EchoAI is currently powered by NVIDIA's
+          nemotron-3-super-120b-a12b model. You may occasionally experience
+          brief delays due to high traffic on the model.
         </div>
       </div>
     </div>
