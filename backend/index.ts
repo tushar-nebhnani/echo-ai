@@ -55,7 +55,7 @@ interface FormattedVideo {
 }
 
 function checkAPIKey() {
-  if (!process.env.GOOGLE_API_KEY) {
+  if (!process.env.GEMINI_API_KEY) {
     return { status: 404, message: "API KEY missing from .env file!!" };
   }
 }
@@ -136,7 +136,7 @@ checkAPIKey();
 // const openai = new OpenAI();
 
 const gemini = new GoogleGenAI({
-  apiKey: process.env.GOOGLE_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 app.get("/health", (_req, res) => {
