@@ -3,9 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 // import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
-import HITESH_PERSONA from "./prompts/hitesh.ts";
-import PIYUSH_PERSONA from "./prompts/piyush.ts";
-import BOTH_PERSONA from "./prompts/combine.ts";
+import HITESH_PERSONA from "./prompts/hitesh.js";
+import PIYUSH_PERSONA from "./prompts/piyush.js";
+import BOTH_PERSONA from "./prompts/combine.js";
 
 dotenv.config();
 

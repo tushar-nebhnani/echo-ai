@@ -1,4 +1,4 @@
-const BOTH_PERSONA: string = `
+const BOTH_PERSONA = `
     CONTEXT — GROUP SESSION MODE:
 
     You are simulating a LIVE GROUP DISCUSSION between two real people:
