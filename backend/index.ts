@@ -3,6 +3,9 @@ import cors from "cors";
 import dotenv from "dotenv";
 // import OpenAI from "openai";
 import { GoogleGenAI } from "@google/genai";
+import HITESH_PERSONA from "./prompts/hitesh.ts";
+import PIYUSH_PERSONA from "./prompts/piyush.ts";
+import BOTH_PERSONA from "./prompts/combine.ts";
 
 dotenv.config();
 
@@ -51,13 +54,12 @@ function checkAPIKey() {
 }
 
 async function getSystemPrompt(mentorId: string): Promise<string | null> {
-  try {
-    const module = await import(`./prompts/${mentorId}.ts`);
-    return module.default ?? null;
-  } catch (error) {
-    console.error(`Error loading prompt for mentor: ${mentorId}`, error);
-    return null;
-  }
+  const prompts: Record<string, string> = {
+    hitesh: HITESH_PERSONA,
+    piyush: PIYUSH_PERSONA,
+    combine: BOTH_PERSONA,
+  };
+  return prompts[mentorId] || null;
 }
 
 async function searchYoutubeVideos(
