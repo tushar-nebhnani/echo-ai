@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import OpenAI from "openai";
+import { OpenAI } from "openai";
 import HITESH_PERSONA from "./prompts/hitesh.js";
 import PIYUSH_PERSONA from "./prompts/piyush.js";
 import BOTH_PERSONA from "./prompts/combine.js";
