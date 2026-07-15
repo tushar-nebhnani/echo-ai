@@ -19,8 +19,8 @@ async function callMentorAPI(
     content: msg.content,
   }));
 
-  const backendUri =
-    import.meta.env.VITE_BACKEND_URI || "http://localhost:8080";
+  const backendUri = import.meta.env.VITE_BACKEND_URI;
+  if (!backendUri) throw new Error("VITE_BACKEND_URI is not defined");
 
   const response = await fetch(`${backendUri}/api/chat`, {
     method: "POST",
@@ -48,7 +48,9 @@ const AppContent: React.FC = () => {
   });
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [chatHistory, setChatHistory] = useState<{ id: string; title: string; mentorId: string }[]>(() => {
+  const [chatHistory, setChatHistory] = useState<
+    { id: string; title: string; mentorId: string }[]
+  >(() => {
     const saved = localStorage.getItem("chatHistory");
     return saved ? JSON.parse(saved) : INITIAL_CHAT_HISTORY;
   });
@@ -222,7 +224,7 @@ const AppContent: React.FC = () => {
         mentorTag={`${selectedMentor.tag} Expert`}
         mentorOnline={selectedMentor.online}
         isMobileSidebarOpen={isMobileSidebarOpen}
-        toggleMobileSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
+        toggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
       />
       <div className="content-wrapper">
         <Sidebar
