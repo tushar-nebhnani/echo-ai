@@ -9,7 +9,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: process.env.CORS_ORIGIN || "http://localhost:5173" }));
+if (!process.env.CORS_ORIGIN)
+  throw new Error("CORS_ORIGIN is not defined in the environment.");
+
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 app.use(express.json());
 
 interface ChatMessage {
