@@ -259,7 +259,18 @@ app.post("/api/chat", async (req, res) => {
     return res.status(500).json({ error: "AI took too many steps to respond" });
   } catch (error: any) {
     // console.error("OpenAI error:", error.message);
+    // Handle specific API errors
+    if (
+      error.status === 429 ||
+      (error.message && error.message.includes("429"))
+    ) {
+      return res.status(429).json({
+        error:
+          "We're experiencing high traffic. Gemini API rate limit exceeded. Please wait a moment and try again.",
+      });
+    }
     console.error("Gemini error:", error);
+
     return res.status(500).json({ error: "Failed to get AI response" });
   }
 });

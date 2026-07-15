@@ -31,30 +31,31 @@ EchoAI is a modern, responsive web-based AI chat application that simulates conv
 
 ```text
 EchoAI/
-├── public/                 # Static assets (images, icons, avatars)
-├── server/
-│   ├── prompts/            # System prompts defining each mentor's persona (e.g. hitesh, piyush)
-│   ├── index.ts            # Main Express server and API routes
-│   ├── chatService.ts      # (Optional) Extracted chat logic
-│   └── package.json        # Backend dependencies
-├── src/
-│   ├── components/         # React components
-│   │   ├── ChatPanel.tsx   # Main chat view and input area
-│   │   ├── Header.tsx      # Navbar with logo and theme toggle
-│   │   ├── MentorCard.tsx  # Sidebar mentor selection cards
-│   │   ├── MessageBubble.tsx # Renders individual chat messages
-│   │   ├── Sidebar.tsx     # Chat history and mentor selection
-│   │   ├── TypingIndicator.tsx
-│   │   └── WelcomeState.tsx # Empty state with suggestion pills
-│   ├── context/            # React context (e.g., ThemeContext for dark mode)
-│   ├── App.tsx             # Main application layout and state management
-│   ├── data.ts             # Initial chat data and mentor configurations
-│   ├── index.css           # Global styles and design tokens
-│   ├── main.tsx            # React DOM entry point
-│   └── types.ts            # TypeScript interfaces
-├── package.json            # Frontend dependencies
-├── tsconfig.json           # TypeScript configuration
-└── vite.config.ts          # Vite configuration
+├── frontend/               # React frontend application
+│   ├── public/             # Static assets (images, icons, avatars)
+│   ├── src/                # Source code
+│   │   ├── components/     # React components
+│   │   │   ├── ChatPanel.tsx   # Main chat view and input area
+│   │   │   ├── Header.tsx      # Navbar with logo and theme toggle
+│   │   │   ├── MentorCard.tsx  # Sidebar mentor selection cards
+│   │   │   ├── MessageBubble.tsx # Renders individual chat messages
+│   │   │   ├── Sidebar.tsx     # Chat history and mentor selection
+│   │   │   ├── TypingIndicator.tsx
+│   │   │   └── WelcomeState.tsx # Empty state with suggestion pills
+│   │   ├── context/        # React context (e.g., ThemeContext for dark mode)
+│   │   ├── App.tsx         # Main application layout and state management
+│   │   ├── data.ts         # Initial chat data and mentor configurations
+│   │   ├── index.css       # Global styles and design tokens
+│   │   ├── main.tsx        # React DOM entry point
+│   │   └── types.ts        # TypeScript interfaces
+│   ├── package.json        # Frontend dependencies
+│   ├── tsconfig.json       # TypeScript configuration
+│   └── vite.config.ts      # Vite configuration
+└── backend/                # Express backend API
+    ├── prompts/            # System prompts defining each mentor's persona
+    ├── index.ts            # Main Express server and API routes
+    ├── package.json        # Backend dependencies
+    └── .env                # Backend environment variables
 ```
 
 ## ⚙️ How It Works (API Calls)
@@ -90,22 +91,27 @@ Follow these steps to run EchoAI locally:
    ```
 
 ### 2. Environment Variables
-Create a `.env` file inside the `server/` directory and add your API keys:
+Create a `.env` file inside the `backend/` directory and add your API keys:
 ```env
-PORT=3001
+PORT=8080
 GOOGLE_API_KEY=your_gemini_api_key
 OPENAI_API_KEY=your_openai_api_key
 YOUTUBE_API_KEY=your_youtube_api_key
 ```
+You can also create a `.env` inside the `frontend/` directory if you need to configure the backend URI:
+```env
+VITE_BACKEND_URI="http://localhost:8080"
+```
 
 ### 3. Install Dependencies
-You will need to install dependencies for both the frontend (React) and backend (Express).
+You will need to install dependencies for both the frontend and backend.
 ```bash
 # Install frontend dependencies
+cd frontend
 npm install
 
 # Install backend dependencies
-cd server
+cd ../backend
 npm install
 ```
 
@@ -114,13 +120,16 @@ You need to run both the frontend and backend servers simultaneously.
 
 **Start the Backend:**
 ```bash
-# In the server/ directory
-npm run dev
+# In the backend/ directory
+cd backend
+npm run start
 ```
 
 **Start the Frontend:**
 Open a new terminal window/tab, navigate to the project root (`EchoAI/`), and run:
 ```bash
+# In the frontend/ directory
+cd frontend
 npm run dev
 ```
 
