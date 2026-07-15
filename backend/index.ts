@@ -15,7 +15,14 @@ const PORT = process.env.PORT || 3001;
 if (!process.env.CORS_ORIGIN)
   throw new Error("CORS_ORIGIN is not defined in the environment.");
 
-app.use(cors({ origin: process.env.CORS_ORIGIN }));
+// Hard Coding My frontend URL!
+app.use(
+  cors({
+    origin: "https://echoai.tushardev.in",
+    methods: ["GET", "POST", "OPTIONS", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 
 interface ChatMessage {
